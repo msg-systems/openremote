@@ -185,6 +185,9 @@ export class OrMwcTable extends LitElement {
     @property({type: Object}) // to manually control HTML (requires td and tr elements)
     protected rowsTemplate?: TemplateResult;
 
+    @property({type: Array})
+    protected paginationSizePresets: number[] = [10, 25, 100];
+
     @property({type: Number})
     protected paginationIndex: number = 0;
 
@@ -312,7 +315,7 @@ export class OrMwcTable extends LitElement {
                                     </div>
                                     <or-mwc-input class="mdc-data-table__pagination-rows-per-page-select"
                                                   .type="${InputType.SELECT}" compact comfortable outlined
-                                                  .value="${this.paginationSize}" .options="${[10, 25, 100]}"
+                                                  .value="${this.paginationSize}" .options="${this.paginationSizePresets}"
                                                   @or-mwc-input-changed="${(ev: OrInputChangedEvent) => {
                                                       this.paginationSize = ev.detail.value;
                                                       this.paginationIndex = 0;
