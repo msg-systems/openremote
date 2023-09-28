@@ -797,7 +797,7 @@ jobs:
           
           docker images
           
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
           # docker build -o type=docker,dest=- --build-arg GIT_COMMIT=$IMAGE_TAG --platform linux/amd64 -t openremote_emil/deployment:$IMAGE_TAG deployment/build
           # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
