@@ -775,8 +775,7 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          mask-password: 'true'
+
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
@@ -789,11 +788,10 @@ jobs:
           echo $ECR_REPOSITORY
           echo $IMAGE_TAG
 
-          docker build -o type=docker,dest=- --build-arg GIT_COMMIT=$IMAGE_TAG --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
-          
-          docker images
+          docker build --build-arg GIT_COMMIT=$IMAGE_TAG --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
           
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
           # docker build -o type=docker,dest=- --build-arg GIT_COMMIT=$IMAGE_TAG --platform linux/amd64 -t openremote_emil/deployment:$IMAGE_TAG deployment/build
           # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
