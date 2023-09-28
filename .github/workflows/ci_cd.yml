@@ -789,7 +789,7 @@ jobs:
           echo $ECR_REPOSITORY
           echo $IMAGE_TAG
 
-          docker build -o type=docker,dest=- --build-arg GIT_COMMIT=$IMAGE_TAG --platform linux/amd64 -t $ECR_REGISTRY/ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
+          docker build -o type=docker,dest=- --build-arg GIT_COMMIT=$IMAGE_TAG --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
           
           docker images
           
