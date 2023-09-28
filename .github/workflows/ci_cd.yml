@@ -796,6 +796,9 @@ jobs:
           # delete image from github actions after push
           docker rmi $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+          docker rmi 33d95806d0fb
+          docker rmi ad4e2c3aaafd
+          docker rmi fa942256f441
           docker images
 
 
