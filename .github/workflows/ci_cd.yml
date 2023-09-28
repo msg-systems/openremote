@@ -572,7 +572,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
         with:
           version: latest
-          install: true
+          install: false
 
       - name: Set up JDK 17 and gradle cache
         id: java
