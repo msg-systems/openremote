@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, OpenRemote Inc. 
+ * Copyright 2021, OpenRemote Inc.
  *
  * See the CONTRIBUTORS.txt file in the distribution for a
  * full listing of individual contributors.
