@@ -785,8 +785,6 @@ jobs:
           ECR_IMAGE_TAG:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker image prune -f
-
           docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -795,17 +793,9 @@ jobs:
 
           # delete image from github actions after push
           docker rmi $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker image prune -f
 
           docker images
-
-      - name: Delete old images in AWS ECR
-        uses: LeiaInc/devops-delete-old-aws-ecr-images@v1
-        env:
-          ECR_REPOSITORY: meterverse_test_repo_github_actions
-        with:
-          repo-name: $ECR_REPOSITORY
-          qtd-images: 2
-
 
       # - name: Do deployments
       #   if: steps.deployments.outputs.value != ''
