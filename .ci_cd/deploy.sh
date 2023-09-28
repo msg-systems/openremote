@@ -171,6 +171,9 @@ if [ -n "$DEPLOYMENT_REF" ]; then
   fi
 fi
 
+echo "DOCKER IMAGES:"
+docker images
+
 # Set version variables
 MANAGER_VERSION="$MANAGER_TAG"
 DEPLOYMENT_VERSION="$DEPLOYMENT_REF"
