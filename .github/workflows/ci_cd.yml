@@ -785,11 +785,16 @@ jobs:
           ECR_IMAGE_TAG:
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          docker image prune -f
+
           docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+          # delete image from github actions after push
+          docker rmi $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
           docker images
 
