@@ -482,10 +482,10 @@ jobs:
           if [ -n "$MANAGER_TAGS" ] || [[ "$DEPLOYMENTS" == *"#ref"* ]] || [ -n "$TEST_UI_CMD" ]; then
             
             if [ -n "$MANAGER_TAGS" ]; then
-              command="docker build --push --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 $MANAGER_TAGS $buildPath"
+              command="docker buildx build --push --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 $MANAGER_TAGS $buildPath"
               echo "pushRequired=true" >> $GITHUB_OUTPUT
             else
-              command="docker build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/manager:$commitShaShort $buildPath"
+              command="docker buildx build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/manager:$commitShaShort $buildPath"
             fi
             echo "value=$command" >> $GITHUB_OUTPUT
           fi
@@ -529,7 +529,7 @@ jobs:
             echo "refTag=$commitShaShort" >> $GITHUB_OUTPUT
 
             if [ -n "$DEPLOYMENTS" ]; then
-              command="docker build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/deployment:$commitShaShort $buildPath"
+              command="docker buildx build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/deployment:$commitShaShort $buildPath"
               echo "value=$command" >> $GITHUB_OUTPUT
             fi
           fi
@@ -572,7 +572,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
         with:
           version: latest
-          install: true
+          install: false # dont set it as synonym to docker build 
 
       - name: Set up JDK 17 and gradle cache
         id: java
@@ -788,15 +788,14 @@ jobs:
           echo $ECR_REPOSITORY
           echo $IMAGE_TAG
 
-          docker build -o type=image --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
+          docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
           
           docker images
 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-          # docker build -o type=docker,dest=- --build-arg GIT_COMMIT=$IMAGE_TAG --platform linux/amd64 -t openremote_emil/deployment:$IMAGE_TAG deployment/build
-          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       # - name: Do deployments
       #   if: steps.deployments.outputs.value != ''
