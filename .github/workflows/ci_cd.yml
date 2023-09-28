@@ -796,10 +796,15 @@ jobs:
           # delete image from github actions after push
           docker rmi $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-          docker rmi 33d95806d0fb
-          docker rmi ad4e2c3aaafd
-          docker rmi fa942256f441
           docker images
+
+      - name: Delete old images in AWS ECR
+        uses: LeiaInc/devops-delete-old-aws-ecr-images@v1
+        env:
+          ECR_REPOSITORY: meterverse_test_repo_github_actions
+        with:
+          repo-name: $ECR_REPOSITORY
+          qtd-images: 2
 
 
       # - name: Do deployments
