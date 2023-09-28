@@ -166,9 +166,9 @@ jobs:
           INPUTS: ${{ toJSON(github.event.inputs) }}
           EVENT_NAME: ${{ github.event_name }}
 
-      - name: Public IP
-        id: ip-address
-        uses: haythem/public-ip@v1.3
+      # - name: Public IP
+      #   id: ip-address
+      #   uses: haythem/public-ip@v1.3
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -566,13 +566,13 @@ jobs:
         with:
           platforms: linux/amd64,linux/aarch64
 
-      - name: install buildx
-        if: ${{ steps.manager-docker-command.outputs.value != '' || steps.deployment-docker-command.outputs.value != '' }}
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          version: latest
-          install: false
+      # - name: install buildx
+      #   if: ${{ steps.manager-docker-command.outputs.value != '' || steps.deployment-docker-command.outputs.value != '' }}
+      #   id: buildx
+      #   uses: docker/setup-buildx-action@v2
+      #   with:
+      #     version: latest
+      #     install: false
 
       - name: Set up JDK 17 and gradle cache
         id: java
@@ -728,15 +728,15 @@ jobs:
           INPUTS_AND_SECRETS: ${{ toJSON(steps.inputs-and-secrets.outputs) }}
         timeout-minutes: 20
 
-      - name: Run manager docker build command
-        if: steps.manager-docker-command.outputs.value != ''
-        run: |
-          ${{ steps.manager-docker-command.outputs.value }}
+      # - name: Run manager docker build command
+      #   if: steps.manager-docker-command.outputs.value != ''
+      #   run: |
+      #     ${{ steps.manager-docker-command.outputs.value }}
 
-      - name: Run maven publish command
-        if: steps.maven-publish-command.outputs.value != ''
-        run: |
-          ${{ steps.maven-publish-command.outputs.value }}
+      # - name: Run maven publish command
+      #   if: steps.maven-publish-command.outputs.value != ''
+      #   run: |
+      #     ${{ steps.maven-publish-command.outputs.value }}
 
       - name: Run frontend tests
         if: steps.test-ui-command.outputs.value != ''
@@ -758,10 +758,10 @@ jobs:
         timeout-minutes: 20
         continue-on-error: true
 
-      - name: Run deployment docker command
-        if: steps.deployment-docker-command.outputs.value != ''
-        run: |
-          ${{ steps.deployment-docker-command.outputs.value }}
+      # - name: Run deployment docker command
+      #   if: steps.deployment-docker-command.outputs.value != ''
+      #   run: |
+      #     ${{ steps.deployment-docker-command.outputs.value }}
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
