@@ -785,7 +785,7 @@ jobs:
           ECR_IMAGE_TAG:
           IMAGE_TAG: ${{ github.sha }}
         run: |        
-          docker build -- provenance=false --platform linux/amd64,linux/aarch64 --build-arg GIT_COMMIT=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
+          docker build --provenance=false --platform linux/amd64,linux/aarch64 --build-arg GIT_COMMIT=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
 
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
