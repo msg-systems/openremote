@@ -483,10 +483,10 @@ jobs:
           if [ -n "$MANAGER_TAGS" ] || [[ "$DEPLOYMENTS" == *"#ref"* ]] || [ -n "$TEST_UI_CMD" ]; then
             
             if [ -n "$MANAGER_TAGS" ]; then
-              command="docker buildx build --push --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 $MANAGER_TAGS $buildPath"
+              command="docker build --push --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 $MANAGER_TAGS $buildPath"
               echo "pushRequired=true" >> $GITHUB_OUTPUT
             else
-              command="docker buildx build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/manager:$commitShaShort $buildPath"
+              command="docker build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/manager:$commitShaShort $buildPath"
             fi
             echo "value=$command" >> $GITHUB_OUTPUT
           fi
@@ -530,7 +530,7 @@ jobs:
             echo "refTag=$commitShaShort" >> $GITHUB_OUTPUT
 
             if [ -n "$DEPLOYMENTS" ]; then
-              command="docker buildx build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/deployment:$commitShaShort $buildPath"
+              command="docker build --build-arg GIT_COMMIT=$commitSha --platform linux/amd64,linux/aarch64 -t openremote/deployment:$commitShaShort $buildPath"
               echo "value=$command" >> $GITHUB_OUTPUT
             fi
           fi
@@ -573,7 +573,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
         with:
           version: latest
-          install: false # dont set it as synonym to docker build 
+          install: true # set docker buildx build as synonym for docker build
 
       - name: Set up JDK 17 and gradle cache
         id: java
@@ -764,7 +764,7 @@ jobs:
         run: |
           ${{ steps.deployment-docker-command.outputs.value }}
 
-      - name: configure aws credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::205672091018:role/GitHubAction-AssumeRoleWithAction
@@ -777,17 +777,15 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, Tag, and Push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: meterverse_test_repo_github_actions
           ECR_IMAGE_TAG:
           IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker images
-          
-          docker buildx build --platform linux/amd64,linux/aarch64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
+        run: |        
+          docker build --platform --build-arg GIT_COMMIT=$IMAGE_TAG linux/amd64,linux/aarch64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
 
           # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
@@ -796,8 +794,13 @@ jobs:
           # delete image from github actions after push
           # docker rmi $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker image prune -f
-
+          echo "Docker images:"
           docker images
+          
+          echo "Docker buildx ls:"
+          docker buildx ls
+
+          
 
       # - name: Do deployments
       #   if: steps.deployments.outputs.value != ''
