@@ -785,23 +785,17 @@ jobs:
           ECR_IMAGE_TAG:
           IMAGE_TAG: ${{ github.sha }}
         run: |        
-          docker build --platform linux/amd64,linux/aarch64 --build-arg GIT_COMMIT=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
-
-          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -- provenance=false --platform linux/amd64,linux/aarch64 --build-arg GIT_COMMIT=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
 
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-          # delete image from github actions after push
+          # delete image from github actions after push:
           # docker rmi $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker image prune -f
-          echo "Docker images:"
-          docker images
+
+          # echo "Docker images:"
+          # docker images
           
-          echo "Docker buildx ls:"
-          docker buildx ls
-
-
-
       # - name: Do deployments
       #   if: steps.deployments.outputs.value != ''
       #   shell: python
