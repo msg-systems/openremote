@@ -787,7 +787,7 @@ jobs:
         run: |
           docker images
           
-          docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
+          docker buildx build --platform linux/amd64,linux/aarch64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
 
           # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
