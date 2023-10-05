@@ -785,7 +785,9 @@ jobs:
           ECR_IMAGE_TAG:
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker buildx build --platform linux/amd64  -o type=registry -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager
+          docker images
+          
+          docker buildx build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG manager/build/install/manager -o type=registry
 
           # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
