@@ -787,7 +787,7 @@ jobs:
         run: |        
           docker build --provenance=false --platform linux/amd64 --build-arg GIT_COMMIT=$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest manager/build/install/manager -o type=registry
 
-          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT 
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
           
           # delete image from github actions after push:
