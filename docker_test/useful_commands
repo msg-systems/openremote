@@ -1,0 +1,10 @@
+# Docker Login Private Registry
+aws ecr get-login-password --region eu-central-1 | sudo docker login --username AWS --password-stdin 205672091018.dkr.ecr.eu-central-1.amazonaws.com
+# Pull Docker Image without Tag
+sudo docker pull 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions
+# Tag Image
+sudo docker tag 6764fe2aa53e 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions:TAGGING_LABEL
+# All Images without Tag with Name | only the first one 
+sudo docker images -f "dangling=true" -q 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions | head -1
+# Tag Image with Tag with Previous Tag 
+sudo docker tag $(sudo docker images -f "dangling=true" -q 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions | head -1) 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions:previous
