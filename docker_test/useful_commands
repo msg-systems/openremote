@@ -1,5 +1,7 @@
 # Docker Login Private Registry
 aws ecr get-login-password --region eu-central-1 | sudo docker login --username AWS --password-stdin 205672091018.dkr.ecr.eu-central-1.amazonaws.com
+# Docker Logout of Private Registry
+sudo docker logout 205672091018.dkr.ecr.eu-central-1.amazonaws.com
 # Pull Docker Image without Tag
 sudo docker pull 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions
 # Tag Image
@@ -8,3 +10,5 @@ sudo docker tag 6764fe2aa53e 205672091018.dkr.ecr.eu-central-1.amazonaws.com/met
 sudo docker images -f "dangling=true" -q 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions | head -1
 # Tag Image with Tag with Previous Tag 
 sudo docker tag $(sudo docker images -f "dangling=true" -q 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions | head -1) 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions:previous
+# Cronjob
+*/10 *  * * *   root    cd /home/ubuntu/customer_2 && echo "$(tail -1000 cron_log.log)" > cron_log.log && ./pull_and_restart.sh >> /home/ubuntu/customer_2/cron_log.log 2>&1
