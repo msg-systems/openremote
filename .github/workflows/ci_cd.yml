@@ -182,7 +182,7 @@ jobs:
       # Check which files have changed to only run appropriate tests and checks
       - name: Backend files changed
         id: backend-files-changed
-        if: github.event_name == 'pull_request'
+        # if: github.event_name == 'pull_request'
         uses: tj-actions/changed-files@v35
         with:
           files_ignore: |
@@ -198,7 +198,7 @@ jobs:
       # Check which files have changed to only run appropriate tests and checks
       - name: UI files changed
         id: ui-files-changed
-        if: github.event_name == 'pull_request'
+        # if: github.event_name == 'pull_request'
         uses: tj-actions/changed-files@v35
         with:
           files: |
