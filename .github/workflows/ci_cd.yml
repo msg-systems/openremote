@@ -781,7 +781,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: meterverse_test_repo_github_actions
+          ECR_REPOSITORY: meterverse_manager
           ECR_IMAGE_TAG:
           IMAGE_TAG: ${{ github.sha }}
         run: |        

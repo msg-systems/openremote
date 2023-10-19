@@ -1,5 +1,5 @@
 #!/bin/bash
-IMAGE_NAME=205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions
+IMAGE_NAME=205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_manager
 IMAGE_TAG=latest
 
 echo ""
@@ -12,7 +12,6 @@ then
     echo ""
     echo "Tag old image with 'previous' in case of failure of the new one."
     sudo docker tag $(sudo docker images -f "dangling=true" -q $IMAGE_NAME | head -1) $IMAGE_NAME:previous
-    echo "Trying to Stop Services and Restart them with new Image:"
     ./restart_docker.sh $IMAGE_NAME $IMAGE_TAG
 
     # Maybe automatic deleting and tagging of images is

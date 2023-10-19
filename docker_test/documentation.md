@@ -38,16 +38,9 @@ Der Amazon ECR Docker Credential Helper wird benutzt, um Docker für die private
 - Versucht dann, die Services mit dem neuen Image neu zu starten.
 - Checkt dann, ob die Services laufen (Docker Statuscheck auf "healthy")
 - Falls alle Services laufen, wird das letzte Image gelöscht.
-#### `stop_docker.sh`
-- Versucht, laufende Services herunter zu fahren.
-- Meist sollte eine `docker-compose.yml` Datei im Ordner vorhanden sein, dann werden nur die dort angegebenen Services heruntergefahren.
-#### `remove_image_and_tag_previous.sh`
-- Wird mit zwei Argumenten aufgerufen:
-    - `IMAGE_NAME`: ECR Registry und Name des Repositories 
-    - `IMAGE_TAG`: Tag des Images, das umgetaggt werden soll
-- Versucht, das gegebene Image mit dem Tag zu löschen
-- Versucht dann, das Image mit dem `previous`-Tag mit `latest` zu taggen.
-- Entfernt dann den Tag `previous` von diesem Image, da es nun als `latest` getaggt ist.
+#### `recover_docker_image.sh`
+- Versucht die laufenden Services zu stoppen.
+- Versucht dann, das neueste Image (`latest`) zu löschen und das alte Image (`previous`) wieder mit `latest` zu taggen, sodass ein älteres Image genutzt werden kann, wenn das Neueste nicht funktioniert.
 
 ### Cron
 - Die Datei `/etc/crontab` ist dafür zuständig, dass die Skripte regelmäßig ausgeführt werden.

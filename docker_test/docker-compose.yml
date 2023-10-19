@@ -58,7 +58,7 @@ services:
   manager:
 #    privileged: true
     restart: always
-    image: 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_test_repo_github_actions:${MANAGER_VERSION:-latest}
+    image: 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_manager:${MANAGER_VERSION:-latest}
     # other name: openremote/manager
     depends_on:
       keycloak:

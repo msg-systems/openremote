@@ -1,5 +1,6 @@
 #!/bin/bash
-
+echo ""s
+echo "Trying to Stop Services and Restart them with new Image:"
 IMAGE_NAME=$1
 echo "Image Name: $IMAGE_NAME"
 IMAGE_TAG=$2
