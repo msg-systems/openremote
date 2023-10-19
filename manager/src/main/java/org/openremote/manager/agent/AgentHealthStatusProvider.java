@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AgentHealthStatusProvider implements HealthStatusProvider {
 
     public static final String NAME = "agents";
-    protected AgentService agentService;
+    protected AgentService 
 
     @Override
     public int getPriority() {
