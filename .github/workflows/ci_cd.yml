@@ -167,10 +167,6 @@ jobs:
           INPUTS: ${{ toJSON(github.event.inputs) }}
           EVENT_NAME: ${{ github.event_name }}
 
-      - name: Public IP
-        id: ip-address
-        uses: haythem/public-ip@v1.3
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
