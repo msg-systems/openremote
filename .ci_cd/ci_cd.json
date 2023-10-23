@@ -1,6 +1,6 @@
 {
 	"push": {
-		"master": {
+		"feature/cicd_pipeline": {
 			"distribute": {
 				"docker": "develop,latest"
 			},
