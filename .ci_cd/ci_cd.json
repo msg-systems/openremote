@@ -3,21 +3,7 @@
 		"master": {
 			"distribute": {
 				"docker": "develop,latest"
-			},
-			"deploy": {
-				"managerTag": "develop",
-				"environment": "staging"
 			}
-		}
-	},
-	"release": {
-		"distribute": {
-			"docker": "latest,$version",
-      "maven": "$version"
-		},
-		"deploy": {
-			"managerTag": "latest",
-			"environment": "production"
 		}
 	}
 }

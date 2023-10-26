@@ -3,6 +3,11 @@
 Die Pipeline basiert auf der Pipeline von Openremote und wurde etwas angepasst.
 Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur ein Image in AWS ECR gepusht. Ein komplettes Deployment findet nicht mehr statt.
 
+### `ci_cd.json`
+- Diese Datei definiert, bei welchen Events und bei welchen Branches die Docker Images hochgeladen werden sollen.
+- Es wrid das Event (z.B. `push`), dann der Branch (z.B. `master`), die Aktion (`distribute` für pushen in Repository) und dann die Plattform (bisher nur `docker`) angegeben.
+- Für das Pushen in das AWS ECR Repository muss `distribute` verwendet werden
+- `deploy` wird in der geänderten Pipeline __nicht__ benutzt, um Versionen automatisch auch zu deployen
 ### AWS IAM:
 - Eine **Rolle** muss erstellt werden, die Berechtigungen für ECR haben muss.
 - GitHub Actions wird als **Identitätsanbieter** in AWS konfiguriert.
