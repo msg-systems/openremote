@@ -1,9 +1,6 @@
 {
 	"push": {
 		"master": {
-			"distribute": {
-				"docker": "develop,latest"
-			},
 			"deploy": {
 				"managerTag": "develop",
 				"environment": "staging"

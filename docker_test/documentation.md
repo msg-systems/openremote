@@ -5,9 +5,9 @@ Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur
 
 ### `ci_cd.json`
 - Diese Datei definiert, bei welchen Events und bei welchen Branches die Docker Images hochgeladen werden sollen.
-- Es wrid das Event (z.B. `push`), dann der Branch (z.B. `master`), die Aktion (`distribute` für pushen in Repository) und dann die Plattform (bisher nur `docker`) angegeben.
-- Für das Pushen in das AWS ECR Repository muss `distribute` verwendet werden
-- `deploy` wird in der geänderten Pipeline __nicht__ benutzt, um Versionen automatisch auch zu deployen
+- Es wrid das Event (z.B. `push`), dann der Branch (z.B. `master`), die Aktion (`deploy` für pushen in Repository) und dann ein Manager-Tag und die Umgebung angegeben.
+- Für das Pushen in das AWS ECR Repository muss `deploy` verwendet werden
+- `distribute` wird in der geänderten Pipeline __nicht__ benutzt, da es nur im openremote/openremote Repository verwendet werden kann.
 ### AWS IAM:
 - Eine **Rolle** muss erstellt werden, die Berechtigungen für ECR haben muss.
 - GitHub Actions wird als **Identitätsanbieter** in AWS konfiguriert.
