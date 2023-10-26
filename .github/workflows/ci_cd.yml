@@ -779,6 +779,7 @@ jobs:
 
       - name: Build, Tag, and Push image to Amazon ECR
         id: build-image
+        # if: steps.deployments.outputs.value != ''
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: meterverse_manager
