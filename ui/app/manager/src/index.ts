@@ -1,4 +1,4 @@
-// Declare require method which we'll use for importing webpack resources  (using ES6 imports will confuse typescript parser)
+// Declare require method which we'll use for importing webpack resources (using ES6 imports will confuse typescript parser)
 import {pageProvisioningProvider} from "./pages/page-provisioning";
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import "@openremote/or-app";
