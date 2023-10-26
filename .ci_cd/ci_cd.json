@@ -2,7 +2,7 @@
 	"push": {
 		"master": {
 			"deploy": {
-				"managerTag": "develop",
+				"managerTag": "ein_neues_tag",
 				"environment": "staging"
 			}
 		}

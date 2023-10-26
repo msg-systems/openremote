@@ -12,6 +12,7 @@ Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur
 - Es wrid das Event (z.B. `push`), dann der Branch (z.B. `master`), die Aktion (`deploy` für pushen in Repository) und dann ein Manager-Tag und die Umgebung angegeben.
 - Für das Pushen in das AWS ECR Repository muss `deploy` verwendet werden
 - `distribute` wird in der geänderten Pipeline __nicht__ benutzt, da es nur im openremote/openremote Repository verwendet werden kann.
+- Das Manager-Tag ist dafür da, dass die Pipeline nicht das Image mit dem Tag `latest` aus dem DockerHub benutzt, sondern das mit dem gegebenen Tag.
 ### AWS IAM:
 - Eine **Rolle** muss erstellt werden, die Berechtigungen für ECR haben muss.
 - GitHub Actions wird als **Identitätsanbieter** in AWS konfiguriert.
