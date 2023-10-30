@@ -1,0 +1,191 @@
+{
+    "containerDefinitions": [
+        {
+            "environment": [
+                {
+                    "name": "KEYCLOAK_ADMIN_PASSWORD",
+                    "value": "${OR_ADMIN_PASSWORD:-secret}"
+                },
+                {
+                    "name": "KC_HOSTNAME",
+                    "value": "${OR_HOSTNAME:-localhost}"
+                },
+                {
+                    "name": "KC_HOSTNAME_PORT",
+                    "value": "${OR_SSL_PORT:--1}"
+                }
+            ],
+            "essential": true,
+            "image": "openremote/keycloak:${KEYCLOAK_VERSION:-latest}",
+            "mountPoints": [
+                {
+                    "containerPath": "/deployment",
+                    "sourceVolume": "DataCustomer_2Deployment"
+                }
+            ],
+            "name": "keycloak"
+        },
+        {
+            "environment": [
+                {
+                    "name": "OR_SETUP_TYPE",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_ADMIN_PASSWORD",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_SETUP_RUN_ON_RESTART",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_EMAIL_HOST",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_EMAIL_USER",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_EMAIL_PASSWORD",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_EMAIL_X_HEADERS",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_EMAIL_FROM",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_EMAIL_ADMIN",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_HOSTNAME",
+                    "value": "${OR_HOSTNAME:-localhost}"
+                },
+                {
+                    "name": "OR_ADDITIONAL_HOSTNAMES",
+                    "value": "${OR_ADDITIONAL_HOSTNAMES:-}"
+                },
+                {
+                    "name": "OR_SSL_PORT",
+                    "value": "${OR_SSL_PORT:--1}"
+                },
+                {
+                    "name": "OR_DEV_MODE",
+                    "value": "${OR_DEV_MODE:-false}"
+                },
+                {
+                    "name": "OR_FORECAST_SOLAR_API_KEY",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_OPEN_WEATHER_API_APP_ID",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_SETUP_IMPORT_DEMO_AGENT_KNX",
+                    "value": "None"
+                },
+                {
+                    "name": "OR_SETUP_IMPORT_DEMO_AGENT_VELBUS",
+                    "value": "None"
+                }
+            ],
+            "essential": true,
+            "image": "205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_manager:${MANAGER_VERSION:-latest}",
+            "mountPoints": [
+                {
+                    "containerPath": "/storage",
+                    "sourceVolume": "DataCustomer_2Manager-Data"
+                }
+            ],
+            "name": "manager"
+        },
+        {
+            "essential": true,
+            "image": "openremote/postgresql:${POSTGRESQL_VERSION:-latest}",
+            "mountPoints": [
+                {
+                    "containerPath": "/var/lib/postgresql/data",
+                    "sourceVolume": "DataCustomer_2Postgresql-Data"
+                },
+                {
+                    "containerPath": "/storage",
+                    "sourceVolume": "DataCustomer_2Manager-Data"
+                }
+            ],
+            "name": "postgresql"
+        },
+        {
+            "environment": [
+                {
+                    "name": "LE_EMAIL",
+                    "value": "${OR_EMAIL_ADMIN:-}"
+                },
+                {
+                    "name": "DOMAINNAME",
+                    "value": "${OR_HOSTNAME:-localhost}"
+                },
+                {
+                    "name": "DOMAINNAMES",
+                    "value": "${OR_ADDITIONAL_HOSTNAMES:-}"
+                }
+            ],
+            "essential": true,
+            "image": "openremote/proxy:${PROXY_VERSION:-latest}",
+            "mountPoints": [
+                {
+                    "containerPath": "/deployment",
+                    "sourceVolume": "DataCustomer_2Proxy-Data"
+                }
+            ],
+            "name": "proxy",
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 81
+                },
+                {
+                    "containerPort": 443,
+                    "hostPort": 444
+                },
+                {
+                    "containerPort": 8883,
+                    "hostPort": 8884
+                }
+            ]
+        }
+    ],
+    "family": "",
+    "volumes": [
+        {
+            "host": {
+                "sourcePath": "/data/customer_2/proxy-data"
+            },
+            "name": "DataCustomer_2Proxy-Data"
+        },
+        {
+            "host": {
+                "sourcePath": "/data/customer_2/postgresql-data"
+            },
+            "name": "DataCustomer_2Postgresql-Data"
+        },
+        {
+            "host": {
+                "sourcePath": "/data/customer_2/manager-data"
+            },
+            "name": "DataCustomer_2Manager-Data"
+        },
+        {
+            "host": {
+                "sourcePath": "/data/customer_2/deployment"
+            },
+            "name": "DataCustomer_2Deployment"
+        }
+    ]
+}
