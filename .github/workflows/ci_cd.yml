@@ -186,6 +186,7 @@ jobs:
         uses: tj-actions/changed-files@v35
         with:
           files_ignore: |
+            docker_test/**
             .ci_cd/**
             console/**
             deployment/**
