@@ -1,0 +1,259 @@
+name: Minimal CI/CD
+
+on:
+  # On push
+  push:
+    branches:
+      - 'master'
+
+  # On pull request
+  pull_request:
+
+  # On Manual trigger
+  workflow_dispatch:
+    inputs:
+      COMMIT:
+        description: 'Repo branch or commit SHA to checkout'
+
+
+
+# needed for aws auth
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read  # This is required for actions/checkout
+
+jobs:
+  build:
+    name: Minimal CI/CD
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Cancel previous runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Public IP # needed
+        id: ip-address
+        uses: haythem/public-ip@v1.3
+
+      - name: Checkout # needed
+        uses: actions/checkout@v3
+        with:
+          # This will only be available when run by workflow_dispatch otherwise will checkout branch/commit that triggered the workflow
+          ref: ${{ github.event.inputs.COMMIT }}
+          submodules: recursive
+          fetch-depth: 200
+
+      # Check which files have changed to only run appropriate tests and checks
+      - name: Backend files changed # needed
+        id: backend-files-changed
+        uses: tj-actions/changed-files@v35
+        with:
+          files_ignore: |
+            docker_test/**
+            .ci_cd/**
+            console/**
+            deployment/**
+            setup/**
+            ui/**
+            **/*.md
+            **/*.yml
+            manager/src/web/**
+
+      # Check which files have changed to only run appropriate tests and checks
+      - name: UI files changed # needed
+        id: ui-files-changed
+        uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            ui/app/manager/**
+            ui/component/**
+          files_ignore: |
+            **/*.md
+            **/*.yml
+      
+      - name: Set skip backend manager tests
+        id: skip-backend-tests
+        if: steps.backend-files-changed.outputs.any_modified != 'true'
+        run: echo "value=true" >> $GITHUB_OUTPUT
+
+      # TODO: Maybe useless because no UI Test???
+      - name: Set skip UI tests
+        id: skip-ui-tests
+        if: steps.ui-files-changed.outputs.any_modified != 'true'
+        run: echo "value=true" >> $GITHUB_OUTPUT
+
+      - name: Make cache dirs and set file permissions
+        run: |
+          chmod +x gradlew
+          # mkdir -p ~/manager-tags-old
+          # mkdir -p ~/manager-tags-new
+
+      - name: Define installDist command
+        id: install-command
+        shell: bash
+        run: |
+          REF_NAME=${REF_NAME//\//_}
+          ./gradlew installDist -PopenremoteVersion=$REF_NAME
+
+      - name: set up QEMU
+        # if: ${{ steps.manager-docker-command.outputs.value != '' || steps.deployment-docker-command.outputs.value != '' }}
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: linux/amd64
+
+      - name: install buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          version: latest
+          install: true # this sets "docker buildx build" as synonym for "docker build"
+
+      - name: Set up JDK 17 and gradle cache
+        id: java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+  
+      - name: Yarn cache
+        uses: actions/cache@v3
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn---${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn---
+
+      - name: Pull docker images
+        if: ${{ steps.skip-backend-tests.outputs.value != 'true' || steps.skip-ui-tests.outputs.value != 'true' }}
+        run: |          
+          # Only need keycloak and postgres services for backend testing
+          if [ $SKIP_BACKEND_TESTS == 'true' ]; then
+            composeProfile='profile/dev-testing.yml'
+          else
+            composeProfile='profile/dev-ui.yml'
+          fi
+
+          # Pull the images
+          docker-compose -f $composeProfile pull
+        env:
+          SKIP_BACKEND_TESTS: ${{ steps.skip-backend-tests.outputs.value == 'true' }}
+          SKIP_UI_TESTS: ${{ steps.skip-ui-tests.outputs.value == 'true' }}
+
+      - name: Run backend tests
+        id: run-backend-tests
+        if: ${{ steps.skip-backend-tests.outputs.value != 'true' }}
+        run: |
+          composeProfile='profile/dev-testing.yml'
+
+          # Make temp dir and set mask to 777 as docker seems to run as root
+          mkdir tmp
+          chmod 777 tmp
+
+          # Start the stack
+          echo "docker-compose -f ${composeProfile} up -d --no-build"
+          docker-compose -f ${composeProfile} up -d --no-build
+
+          # Run the tests
+          ./gradlew -p test test
+        timeout-minutes: 20
+        #continue-on-error: true
+
+      - name: Archive backend test results
+        if: ${{ steps.skip-backend-tests.outputs.value != 'true' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-test-results
+          path: test/build/reports/tests
+
+      - name: Cleanup backend tests # needed
+        if: ${{ steps.skip-backend-tests.outputs.value != 'true' && steps.skip-backend-tests.outputs.value != 'true' }}
+        run: docker-compose -f $composeProfile down
+
+      # TODO
+      - name: Run install dist
+        if: steps.install-command.outputs.value != ''
+        shell: python
+        run: |        
+          import json
+          import os
+          import sys
+          import subprocess
+          
+          inputsAndSecrets = json.loads(os.getenv("INPUTS_AND_SECRETS"))
+
+          # Output inputs and secrets as environment variables for build
+          for key, value in inputsAndSecrets.items():
+            if "." in key:
+              continue
+
+            # Look for temp and env prefixed keys
+            if key.startswith("_"):
+              if key.startswith("_TEMP_"):
+                key = key.replace("_TEMP_", "")
+              else:
+                continue
+
+            os.system(f"echo 'Setting environment variable {key}...'")
+            os.putenv(key, value)
+          
+          buildCmd = os.getenv("CMD")
+          result = subprocess.run(f"{buildCmd}", shell=True)
+
+          if result.returncode != 0:
+            os.system("echo 'installDist failed'")
+            sys.exit(result.returncode)
+
+        env:
+          CMD: ${{ steps.install-command.outputs.value }}
+          INPUTS_AND_SECRETS: ${{ toJSON(steps.inputs-and-secrets.outputs) }}
+        timeout-minutes: 20
+
+      - name: Configure AWS Credentials 
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::205672091018:role/GitHubAction-AssumeRoleWithAction
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC_meterverse
+          aws-region: ${{ env.AWS_REGION }}
+        env:
+          AWS_REGION: eu-central-1
+      
+      - name: Login to Amazon ECR 
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set current date as env variable 
+        run: echo "NOW=$(TZ='Europe/Berlin' date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
+
+      - name: Build, Tag, and Push image to Amazon ECR 
+        id: build-image
+        if: steps.deployments.outputs.value != ''
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: meterverse_manager
+          ECR_IMAGE_TAG:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |        
+          docker build --provenance=false --platform linux/amd64 --build-arg GIT_COMMIT=$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$NOW \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            manager/build/install/manager -o type=registry
+
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+          
+          # delete image from github actions after push:
+          # docker rmi $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker image prune -f
+
+          # echo "Docker images:"
+          # docker images

@@ -167,11 +167,11 @@ jobs:
           INPUTS: ${{ toJSON(github.event.inputs) }}
           EVENT_NAME: ${{ github.event_name }}
 
-      - name: Public IP # needed
+      - name: Public IP 
         id: ip-address
         uses: haythem/public-ip@v1.3
 
-      - name: Checkout # needed
+      - name: Checkout 
         uses: actions/checkout@v3
         with:
           # This will only be available when run by workflow_dispatch otherwise will checkout branch/commit that triggered the workflow
@@ -180,7 +180,7 @@ jobs:
           fetch-depth: 200
 
       # Check which files have changed to only run appropriate tests and checks
-      - name: Backend files changed # needed
+      - name: Backend files changed 
         id: backend-files-changed
         # if: github.event_name == 'pull_request'
         uses: tj-actions/changed-files@v35
@@ -197,7 +197,7 @@ jobs:
             manager/src/web/**
 
       # Check which files have changed to only run appropriate tests and checks
-      - name: UI files changed # needed
+      - name: UI files changed 
         id: ui-files-changed
         # if: github.event_name == 'pull_request'
         uses: tj-actions/changed-files@v35
@@ -209,12 +209,12 @@ jobs:
             **/*.md
             **/*.yml
 
-      - name: Set skip backend manager tests # needed
+      - name: Set skip backend manager tests 
         id: skip-backend-tests
         if: steps.backend-files-changed.outputs.any_modified != 'true'
         run: echo "value=true" >> $GITHUB_OUTPUT
 
-      - name: Set skip UI tests # needed
+      - name: Set skip UI tests 
         id: skip-ui-tests
         if: steps.ui-files-changed.outputs.any_modified != 'true'
         run: echo "value=true" >> $GITHUB_OUTPUT
@@ -234,13 +234,13 @@ jobs:
         env:
           REPO_NAME: ${{ github.repository }}
           
-      - name: Check deployment build.gradle # needed
+      - name: Check deployment build.gradle
         id: check_deployment_gradle
         uses: andstor/file-existence-action@v2
         with:
           files: "deployment/build.gradle"
           
-      - name: Check deployment dockerfile # needed
+      - name: Check deployment dockerfile
         id: check_deployment_dockerfile
         uses: andstor/file-existence-action@v2
         with:
@@ -457,12 +457,12 @@ jobs:
           INPUT_ENVIRONMENT: ${{ steps.inputs-and-secrets.outputs.ENVIRONMENT }}
           INPUT_MANAGER_TAG: ${{steps.inputs-and-secrets.outputs.MANAGER_TAG }}
 
-      - name: Define backend test command # needed
+      - name: Define backend test command 
         id: test-backend-command
         if: ${{ steps.skip-backend-tests.outputs.value != 'true' }}
         run: echo "value=./gradlew -p test test" >> $GITHUB_OUTPUT
 
-      - name: Define UI test command # needed
+      - name: Define UI test command 
         id: test-ui-command
         if: ${{ steps.skip-ui-tests.outputs.value != 'true' }}
         run: echo ""
@@ -540,7 +540,7 @@ jobs:
           DEPLOYMENT_DOCKERFILE_EXISTS: ${{ steps.check_deployment_dockerfile.outputs.files_exists }}
           DEPLOYMENT_GRADLE_EXISTS: ${{ steps.check_deployment_gradle.outputs.files_exists }}
           
-      - name: Define installDist command # needed
+      - name: Define installDist command 
         id: install-command
         shell: bash
         run: |
@@ -562,13 +562,13 @@ jobs:
           username: ${{ steps.inputs-and-secrets.outputs._TEMP_DOCKERHUB_USER || steps.inputs-and-secrets.outputs.DOCKERHUB_USER }}
           password: ${{ steps.inputs-and-secrets.outputs._TEMP_DOCKERHUB_PASSWORD || steps.inputs-and-secrets.outputs.DOCKERHUB_PASSWORD }}
 
-      - name: set up QEMU # needed
+      - name: set up QEMU 
         if: ${{ steps.manager-docker-command.outputs.value != '' || steps.deployment-docker-command.outputs.value != '' }}
         uses: docker/setup-qemu-action@v2
         with:
           platforms: linux/amd64,linux/aarch64
 
-      - name: install buildx # needed
+      - name: install buildx 
         if: ${{ steps.manager-docker-command.outputs.value != '' || steps.deployment-docker-command.outputs.value != '' }}
         id: buildx
         uses: docker/setup-buildx-action@v2
@@ -576,7 +576,7 @@ jobs:
           version: latest
           install: true # set docker buildx build as synonym for docker build
 
-      - name: Set up JDK 17 and gradle cache # needed
+      - name: Set up JDK 17 and gradle cache 
         id: java
         if: ${{ steps.install-command.outputs.value != '' || steps.test-backend-command.outputs.value != '' }}
         uses: actions/setup-java@v3
@@ -585,11 +585,11 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Get yarn cache directory path # needed
+      - name: Get yarn cache directory path 
         id: yarn-cache-dir-path
         run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
 
-      - name: Yarn cache # needed
+      - name: Yarn cache 
         uses: actions/cache@v3
         if: steps.skip-cicd.outputs.value != 'true'
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
@@ -599,7 +599,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn---
 
-      - name: Output info # needed
+      - name: Output info 
         if: steps.skip-cicd.outputs.value != 'true'
         run: |
           echo "************************************************************"
@@ -627,7 +627,7 @@ jobs:
           echo "************************************************************"
           echo "************************************************************"
 
-      - name: Pull docker images # needed
+      - name: Pull docker images
         if: ${{ steps.test-backend-command.outputs.value != '' || steps.test-ui-command.outputs.value != '' }}
         run: |          
           # Only need keycloak and postgres services for backend testing
@@ -648,12 +648,12 @@ jobs:
           TEST_UI_COMMAND: ${{ steps.test-ui-command.outputs.value }}
 
       # Use docker layer caching to speed up image building
-      - uses: satackey/action-docker-layer-caching@v0.0.11 # needed
+      - uses: satackey/action-docker-layer-caching@v0.0.11 
         if: ${{ steps.manager-docker-command.outputs.value != '' || steps.deployment-docker-command.outputs.value != '' }}
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
-      - name: Run backend tests # needed
+      - name: Run backend tests 
         id: run-backend-tests
         if: ${{ steps.test-backend-command.outputs.value != '' }}
         run: |
@@ -675,24 +675,25 @@ jobs:
           docker-compose -f ${composeProfile} up -d --no-build
 
           # Run the tests
+          
           ${{ steps.test-backend-command.outputs.value }}
         env:
           IS_CUSTOM_PROJECT: ${{ steps.check_custom_project.outputs.files_exists }}
         timeout-minutes: 20
         #continue-on-error: true
 
-      - name: Archive backend test results # needed
+      - name: Archive backend test results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: backend-test-results
           path: test/build/reports/tests
 
-      - name: Cleanup backend tests # needed
+      - name: Cleanup backend tests
         if: ${{ steps.test-backend-command.outputs.value != '' && steps.test-ui-command.outputs.value != '' }}
         run: ${{ steps.run-backend-tests.outputs.cleanup }}
 
-      - name: Run install dist # needed
+      - name: Run install dist
         if: steps.install-command.outputs.value != ''
         shell: python
         run: |        
@@ -740,7 +741,7 @@ jobs:
         run: |
           ${{ steps.maven-publish-command.outputs.value }}
 
-      - name: Run frontend tests # needed
+      - name: Run frontend tests 
         if: steps.test-ui-command.outputs.value != ''
         run: |          
           composeProfile='profile/dev-ui.yml'
@@ -765,7 +766,7 @@ jobs:
         run: |
           ${{ steps.deployment-docker-command.outputs.value }}
 
-      - name: Configure AWS Credentials # needed
+      - name: Configure AWS Credentials 
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::205672091018:role/GitHubAction-AssumeRoleWithAction
@@ -774,14 +775,14 @@ jobs:
         env:
           AWS_REGION: eu-central-1
       
-      - name: Login to Amazon ECR # needed
+      - name: Login to Amazon ECR 
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Set current date as env variable # needed
+      - name: Set current date as env variable 
         run: echo "NOW=$(TZ='Europe/Berlin' date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Build, Tag, and Push image to Amazon ECR # needed
+      - name: Build, Tag, and Push image to Amazon ECR 
         id: build-image
         if: steps.deployments.outputs.value != ''
         env:
