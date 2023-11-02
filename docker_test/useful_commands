@@ -12,3 +12,6 @@ sudo docker images -f "dangling=true" -q 205672091018.dkr.ecr.eu-central-1.amazo
 sudo docker tag $(sudo docker images -f "dangling=true" -q 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_manager | head -1) 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_manager:previous
 # Cronjob
 */10 *  * * *   root    cd /home/ubuntu/customer_2 && echo "$(tail -1000 cron_log.log)" > cron_log.log && ./pull_and_restart.sh >> /home/ubuntu/customer_2/cron_log.log 2>&1
+# Latest Image aus Repo mit prod taggen
+MANIFEST=$(aws ecr batch-get-image --repository-name meterverse_manager --image-ids imageTag=latest --output text --query 'images[].imageManifest')
+aws ecr put-image --repository-name meterverse_manager --image-tag prod --image-manifest "$MANIFEST"
