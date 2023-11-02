@@ -26,7 +26,25 @@ Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur
 ## Aktualisieren der Docker Images auf den EC2 Instanzen
 - Es wird Watchtower verwendet, um die Images automatisiert zu aktualisieren.
 - [Es muss der AWS Credential Helper für Watchtower konfiguriert werden](https://containrrr.dev/watchtower/private-registries/#credential_helpers)
-
+- Um Watchtower im docker-compose.yml File zu verwenden:
+    ```
+    watchtower:
+        image: containrrr/watchtower:latest
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - $HOME/.docker/config.json:/config.json
+            - helper:/go/bin
+        environment:
+            - HOME=/home/ubuntu/
+            - PATH=$PATH:/go/bin
+            - AWS_REGION=us-west-1
+        command: --interval 30 --label-enable
+    ```
+- Die Container, die durch Watchtower aktualisiert werden sollen, erhalten ein Label:
+    ```
+        labels:
+            - "com.centurylinklabs.watchtower.enable=true"
+    ```
 ## AWS Skripte
 Es gibt mehrere Skripte, die in der EC2-Instanz automatisch die neuen Images pullen und die Docker Services neustarten.
 Dies wird mit Hilfe von Cron erreicht, sodass die Skripte regelmäßig ausgeführt werden.

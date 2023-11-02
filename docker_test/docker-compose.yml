@@ -99,5 +99,4 @@ services:
       - HOME=/home/ubuntu/
       - PATH=$PATH:/go/bin
       - AWS_REGION=us-west-1
-      # - WATCHTOWER_LABEL_ENABLE=true
     command: --interval 30 --label-enable
