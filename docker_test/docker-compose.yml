@@ -12,6 +12,8 @@ volumes:
   proxy-data:
   manager-data:
   postgresql-data:
+  helper: 
+    external: true
 
 services:
 
@@ -60,6 +62,8 @@ services:
     restart: always
     image: 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_manager:${MANAGER_VERSION:-latest}
     # other name: openremote/manager
+    # labels:
+    #   - "com.centurylinklabs.watchtower.enable=true"
     depends_on:
       keycloak:
         condition: service_healthy
@@ -86,8 +90,14 @@ services:
     volumes:
       - /data/customer_2/manager-data:/storage
   watchtower:
-    image: containrrr/watchtower
+    image: containrrr/watchtower:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    command: --interval 30
-
+      - $HOME/.docker/config.json:/config.json
+      - helper:/go/bin
+    environment:
+      - HOME=/home/ubuntu/
+      - PATH=$PATH:/go/bin
+      - AWS_REGION=us-west-1
+      # - WATCHTOWER_LABEL_ENABLE=true
+    command: --interval 30 --label-enable true

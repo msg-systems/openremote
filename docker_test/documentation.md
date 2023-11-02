@@ -23,6 +23,10 @@ Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur
 - Die richtige Region muss im Schritt "`Configure AWS Credentials`" als Variable eingetragen werden.
 - Im Repository kann eine **Lifecycle Policy** konfiguriert werden, die ältere Images regelmäßig löscht.
 
+## Aktualisieren der Docker Images auf den EC2 Instanzen
+- Es wird Watchtower verwendet, um die Images automatisiert zu aktualisieren.
+- [Es muss der AWS Credential Helper für Watchtower konfiguriert werden](https://containrrr.dev/watchtower/private-registries/#credential_helpers)
+
 ## AWS Skripte
 Es gibt mehrere Skripte, die in der EC2-Instanz automatisch die neuen Images pullen und die Docker Services neustarten.
 Dies wird mit Hilfe von Cron erreicht, sodass die Skripte regelmäßig ausgeführt werden.
