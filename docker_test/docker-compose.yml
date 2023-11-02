@@ -62,8 +62,8 @@ services:
     restart: always
     image: 205672091018.dkr.ecr.eu-central-1.amazonaws.com/meterverse_manager:${MANAGER_VERSION:-latest}
     # other name: openremote/manager
-    # labels:
-    #   - "com.centurylinklabs.watchtower.enable=true"
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     depends_on:
       keycloak:
         condition: service_healthy
@@ -100,4 +100,4 @@ services:
       - PATH=$PATH:/go/bin
       - AWS_REGION=us-west-1
       # - WATCHTOWER_LABEL_ENABLE=true
-    command: --interval 30 --label-enable true
+    command: --interval 30 --label-enable
