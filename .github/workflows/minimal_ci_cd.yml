@@ -5,10 +5,9 @@ on:
   push:
     branches:
       - 'master'
-      - 'development'
 
   # On pull request
-  pull_request:
+  # pull_request:
 
   # On Manual trigger
   workflow_dispatch:
