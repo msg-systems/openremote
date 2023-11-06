@@ -91,13 +91,6 @@ jobs:
           # mkdir -p ~/manager-tags-old
           # mkdir -p ~/manager-tags-new
 
-      - name: Define installDist command
-        id: install-command
-        shell: bash
-        run: |
-          REF_NAME=${REF_NAME//\//_}
-          ./gradlew installDist -PopenremoteVersion=$REF_NAME
-
       - name: set up QEMU
         # if: ${{ steps.manager-docker-command.outputs.value != '' || steps.deployment-docker-command.outputs.value != '' }}
         uses: docker/setup-qemu-action@v2
