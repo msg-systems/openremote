@@ -181,14 +181,13 @@ jobs:
           import subprocess
           
           buildCmd = os.getenv("CMD")
-          REF_NAME=${REF_NAME//\//_}
           result = subprocess.run(f"{buildCmd}", shell=True)
 
           if result.returncode != 0:
             os.system("echo 'installDist failed'")
             sys.exit(result.returncode)
         env:
-          CMD: ./gradlew installDist -PopenremoteVersion=$REF_NAME
+          CMD: ./gradlew installDist -PopenremoteVersion=${REF_NAME//\//_}
           REF_NAME: ${{ github.ref_name}}
         timeout-minutes: 20
 
