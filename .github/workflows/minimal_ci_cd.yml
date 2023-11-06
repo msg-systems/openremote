@@ -173,7 +173,6 @@ jobs:
 
       # TODO
       - name: Run install dist
-        if: steps.install-command.outputs.value != ''
         shell: python
         run: |
           import os
@@ -187,7 +186,6 @@ jobs:
             sys.exit(result.returncode)
 
         env:
-          CMD: ${{ steps.install-command.outputs.value }}
           REF_NAME: ${{ github.ref_name}}
         timeout-minutes: 20
 
