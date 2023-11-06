@@ -182,31 +182,12 @@ jobs:
       - name: Run install dist
         if: steps.install-command.outputs.value != ''
         shell: python
-        run: |        
-          import json
+        run: |
           import os
           import sys
           import subprocess
           
-          inputsAndSecrets = json.loads(os.getenv("INPUTS_AND_SECRETS"))
-
-          # Output inputs and secrets as environment variables for build
-          for key, value in inputsAndSecrets.items():
-            if "." in key:
-              continue
-
-            # Look for temp and env prefixed keys
-            if key.startswith("_"):
-              if key.startswith("_TEMP_"):
-                key = key.replace("_TEMP_", "")
-              else:
-                continue
-
-            os.system(f"echo 'Setting environment variable {key}...'")
-            os.putenv(key, value)
-          
-          buildCmd = os.getenv("CMD")
-          result = subprocess.run(f"{buildCmd}", shell=True)
+          result = subprocess.run(f"{./gradlew installDist -PopenremoteVersion=$REF_NAME}", shell=True)
 
           if result.returncode != 0:
             os.system("echo 'installDist failed'")
@@ -214,7 +195,7 @@ jobs:
 
         env:
           CMD: ${{ steps.install-command.outputs.value }}
-          INPUTS_AND_SECRETS: ${{ toJSON(steps.inputs-and-secrets.outputs) }}
+          REF_NAME: ${{ github.ref_name}}
         timeout-minutes: 20
 
       - name: Configure AWS Credentials 
@@ -235,7 +216,6 @@ jobs:
 
       - name: Build, Tag, and Push image to Amazon ECR 
         id: build-image
-        if: steps.deployments.outputs.value != ''
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: meterverse_manager
