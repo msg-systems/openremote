@@ -34,8 +34,6 @@ public class AgentHealthStatusProvider implements HealthStatusProvider {
     public static final String NAME = "agents";
     protected AgentService agentService;
 
-    
-
     @Override
     public int getPriority() {
         return ContainerService.DEFAULT_PRIORITY;
