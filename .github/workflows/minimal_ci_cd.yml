@@ -187,8 +187,7 @@ jobs:
             os.system("echo 'installDist failed'")
             sys.exit(result.returncode)
         env:
-          CMD: ./gradlew installDist -PopenremoteVersion=${REF_NAME//\//_}
-          REF_NAME: ${{ github.ref_name}}
+          CMD: ./gradlew installDist
         timeout-minutes: 20
 
       - name: Configure AWS Credentials 
