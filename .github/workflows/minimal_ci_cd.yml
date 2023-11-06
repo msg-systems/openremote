@@ -181,6 +181,7 @@ jobs:
           import subprocess
           
           buildCmd = os.getenv("CMD")
+          REF_NAME=${REF_NAME//\//_}
           result = subprocess.run(f"{buildCmd}", shell=True)
 
           if result.returncode != 0:
