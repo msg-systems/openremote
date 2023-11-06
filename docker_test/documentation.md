@@ -2,6 +2,10 @@
 ## Github Actions Pipeline
 Die Pipeline basiert auf der Pipeline von Openremote und wurde etwas angepasst.
 Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur ein Image in AWS ECR gepusht. Ein komplettes Deployment findet nicht mehr statt.
+### `minimal_ci_cd.yml`
+- `.github/workflows/minimal_ci_cd.yml`
+- Das ist eine minimale Pipeline, die Tests ausführt und das DOcker Image baut und pusht
+- Kommt ohne Config Files aus, daher auch weniger konfigurierbar
 ### `ci_cd.yml`
 - `.github/workflows/ci_cd.yml`
 - Das ist die Datei, die die Pipeline definiert
@@ -25,7 +29,7 @@ Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur
 
 ## Aktualisieren der Docker Images auf den EC2 Instanzen
 - Es wird Watchtower verwendet, um die Images automatisiert zu aktualisieren.
-- [Es muss der AWS Credential Helper für Watchtower konfiguriert werden](https://containrrr.dev/watchtower/private-registries/#credential_helpers)
+- [Es muss der AWS Credential Helper für Watchtower konfiguriert werden](https://containrrr.dev/watchtower/private-registries/#credential_helpers) (und wahrscheinlich die aws-cli installiert sein)
 - Um Watchtower im docker-compose.yml File zu verwenden:
     ```
     watchtower:
