@@ -186,7 +186,6 @@ jobs:
         uses: tj-actions/changed-files@v35
         with:
           files_ignore: |
-            docker_test/**
             .ci_cd/**
             console/**
             deployment/**
@@ -675,7 +674,6 @@ jobs:
           docker-compose -f ${composeProfile} up -d --no-build
 
           # Run the tests
-          
           ${{ steps.test-backend-command.outputs.value }}
         env:
           IS_CUSTOM_PROJECT: ${{ steps.check_custom_project.outputs.files_exists }}
