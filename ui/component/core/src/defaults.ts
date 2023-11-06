@@ -1,4 +1,4 @@
-export const DefaultColor4: string = "#4d9d2b"; // Primary
+export const DefaultColor4: string = "#4d9d2a"; // Primary
 export const DefaultColor7: string = "#FFFFFF"; // Secondary
 export const DefaultColor1: string = "#FFFFFF"; // Surface
 export const DefaultColor2: string = "#F9F9F9"; // Background

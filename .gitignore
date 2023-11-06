@@ -51,6 +51,7 @@ local.properties
 *.ipa
 *.apk
 *.dab
+*.sh
 *.iml
 *.ipr
 *.iws
