@@ -169,7 +169,9 @@ jobs:
 
       - name: Cleanup backend tests # needed
         if: ${{ steps.skip-backend-tests.outputs.value != 'true' && steps.skip-backend-tests.outputs.value != 'true' }}
-        run: docker-compose -f $composeProfile down
+        run: |
+          composeProfile='profile/dev-testing.yml'
+          docker-compose -f $composeProfile down
 
       # TODO
       - name: Run install dist
@@ -188,6 +190,20 @@ jobs:
         env:
           CMD: ./gradlew installDist
         timeout-minutes: 20
+
+      - name: Run frontend tests 
+        if: ${{ steps.skip-ui-tests.outputs.value != 'true' }}
+        run: |
+          composeProfile='profile/dev-ui.yml'
+
+          # Start the stack          
+          docker-compose -f $composeProfile up -d --no-build
+
+          # Run the tests
+          # No frontend tests until now
+          echo ""
+        timeout-minutes: 20
+        continue-on-error: true
 
       - name: Configure AWS Credentials 
         uses: aws-actions/configure-aws-credentials@v4
