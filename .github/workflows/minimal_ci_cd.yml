@@ -4,8 +4,7 @@ on:
   # On push
   push:
     branches:
-      - 'master'
-      - 'feature/cicd_pipeline'
+      - 'development'
 
   # On pull request
   # pull_request:
