@@ -4,6 +4,18 @@ Die Pipeline basiert auf der Pipeline von Openremote und wurde etwas angepasst.
 Es wurde auf rollenbasierte AWS Authentifizierung umgestellt und es wird nun nur ein Image in AWS ECR gepusht. Ein komplettes Deployment findet nicht mehr statt.
 
 Die Pipelines, die (nicht) ausgeführt werden sollen, müssen in GitLab aktiviert bzw. deaktiviert werden.
+### Vorgehen für die einzelnen Branches
+#### Development
+- Automatisches Testen, Bauen und Pushen bei Push und Pull-Request
+- Watchtower auf Test-Instanz und bei neuen `latest`-Images aktualisieren lassen
+    - Dafür muss im `docker-compose.yml` File das Image mit dem `latest` Tag angegeben werden
+#### Main/Master
+- Keine Pipeline (?)
+#### Prod
+- Manuelles taggen des Images in AWS ECR mit `prod`
+- Watchtower auf Prod-Instanz laufen lassen und nur bei neuen `prod`-Images aktualisieren lassen
+    - Dafür muss im `docker-compose.yml` File das Image mit dem `prod` Tag angegeben werden
+
 ### `minimal_ci_cd.yml`
 - `.github/workflows/minimal_ci_cd.yml`
 - Das ist eine minimale Pipeline, die Tests ausführt und das Docker Image baut und pusht
