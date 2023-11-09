@@ -63,7 +63,7 @@ on:
       - '*.*'
 
   # PR
-  pull_request:
+  # pull_request:
 
   # When a release is published
   release:
