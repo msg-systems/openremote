@@ -1,23 +1,9 @@
 {
 	"push": {
-		"master": {
-			"distribute": {
-				"docker": "develop,latest"
-			},
+		"developement": {
 			"deploy": {
-				"managerTag": "develop",
-				"environment": "staging"
+
 			}
-		}
-	},
-	"release": {
-		"distribute": {
-			"docker": "latest,$version",
-      "maven": "$version"
-		},
-		"deploy": {
-			"managerTag": "latest",
-			"environment": "production"
 		}
 	}
 }
